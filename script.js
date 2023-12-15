@@ -1,14 +1,15 @@
 const ship = document.getElementById("ship");
 const block = document.querySelector(".block");
 let isMoving = false;
+let mouseX, mouseY;
 
 document.addEventListener("mousemove", handleMouseMove);
 document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 
 function handleMouseMove(event) {
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
+    mouseX = event.clientX;
+    mouseY = event.clientY;
 
     const shipRect = ship.getBoundingClientRect();
     const shipX = shipRect.left + shipRect.width / 2;
@@ -43,19 +44,14 @@ function moveShip() {
         const shipX = shipRect.left + shipRect.width / 2;
         const shipY = shipRect.top + shipRect.height / 2;
 
-        const mouseX = shipX;
-        const mouseY = shipY;
-
         const angleRad = Math.atan2(mouseY - shipY, mouseX - shipX);
-        const speed = 2.5;
+        const speed = 1;
         const deltaX = Math.cos(angleRad) * speed;
         const deltaY = Math.sin(angleRad) * speed;
 
-        // Bereken de nieuwe positie van het schip
         const newShipX = shipRect.left + deltaX;
         const newShipY = shipRect.top + deltaY;
 
-        // Controleer of het schip binnen de grenzen van .block blijft
         if (
             newShipX >= block.offsetLeft &&
             newShipX + shipRect.width <= block.offsetLeft + block.offsetWidth &&
@@ -69,3 +65,65 @@ function moveShip() {
         requestAnimationFrame(moveShip);
     }
 }
+
+// Functie om willekeurige cirkels toe te voegen
+function createCircle() {
+    const circle = document.createElement("div");
+    circle.className = "ball";
+
+    // Kies een willekeurige grootte (klein, medium of groot)
+    const sizeClass = getRandomSizeClass();
+    circle.classList.add(sizeClass);
+
+    document.body.appendChild(circle);
+
+    const circleRect = circle.getBoundingClientRect();
+
+    // Bepaal de initiële x- en y-posities binnen het .block
+    const x = Math.random() * (block.offsetWidth - circleRect.width);
+    const y = Math.random() * (block.offsetHeight - circleRect.height);
+
+    // Voeg grootteklasse toe aan cirkel
+    circle.style.left = `${block.offsetLeft + x}px`;
+    circle.style.top = `${block.offsetTop + y}px`;
+
+    const speed = Math.random() * 2 + 1;
+    const angle = Math.random() * 2 * Math.PI;
+
+    moveCircle(circle, speed, angle);
+}
+
+
+// Functie om de beweging van de cirkels te regelen
+function moveCircle(circle, speed, angle) {
+    function move() {
+        const circleRect = circle.getBoundingClientRect();
+        const newX = circleRect.left + Math.cos(angle) * speed;
+        const newY = circleRect.top + Math.sin(angle) * speed;
+
+        if (
+            newX > window.innerWidth ||
+            newX + circleRect.width < 0 ||
+            newY > window.innerHeight ||
+            newY + circleRect.height < 0
+        ) {
+            circle.remove();
+        } else {
+            circle.style.left = `${newX}px`;
+            circle.style.top = `${newY}px`;
+            requestAnimationFrame(move);
+        }
+    }
+
+    move();
+}
+
+// Functie om willekeurige grootteklasse te krijgen
+function getRandomSizeClass() {
+    const sizeOptions = ["small", "medium", "large"];
+    const randomIndex = Math.floor(Math.random() * sizeOptions.length);
+    return sizeOptions[randomIndex];
+}
+
+// Hoe snel cirkels verschijnen
+setInterval(createCircle, 100);
