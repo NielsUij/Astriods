@@ -35,12 +35,3 @@ body {
     right: 10px;
     font-size: 18px;
 }
-
-.ball {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    background-color: #ffffff;
-    border-radius: 25%;
-}
-

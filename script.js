@@ -1,77 +1,71 @@
 const ship = document.getElementById("ship");
-const scoreElement = document.getElementById("score");
-
-let score = 0;
+const block = document.querySelector(".block");
+let isMoving = false;
 
 document.addEventListener("mousemove", handleMouseMove);
 document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
 
 function handleMouseMove(event) {
-    // Haal de muispositie op
     const mouseX = event.clientX;
     const mouseY = event.clientY;
 
-    // Bepaal de positie van het midden van het schip
     const shipRect = ship.getBoundingClientRect();
     const shipX = shipRect.left + shipRect.width / 2;
     const shipY = shipRect.top + shipRect.height / 2;
 
-    // Bereken de hoek tussen het schip en de muispositie
     const angleRad = Math.atan2(mouseY - shipY, mouseX - shipX);
     const angleDeg = (angleRad * 180) / Math.PI;
 
     const finalRotation = angleDeg + 90;
-
     const normalizedRotation = (finalRotation + 360) % 360;
 
-    // Update de rotatie van het schip
     ship.style.transformOrigin = "center";
     ship.style.transform = `translate(-50%, -50%) rotate(${normalizedRotation}deg)`;
 }
 
 function handleKeyDown(event) {
-    if (event.key === " ") {
-        moveBallForward();
+    if (event.key === "w" && !isMoving) {
+        isMoving = true;
+        moveShip();
     }
 }
 
-function moveBallForward() {
-    const ball = document.createElement("div");
-    ball.className = "ball";
-    document.body.appendChild(ball);
+function handleKeyUp(event) {
+    if (event.key === "w") {
+        isMoving = false;
+    }
+}
 
-    const shipRect = ship.getBoundingClientRect();
-    const shipX = shipRect.left + shipRect.width / 2;
-    const shipY = shipRect.top + shipRect.height / 2;
+function moveShip() {
+    if (isMoving) {
+        const shipRect = ship.getBoundingClientRect();
+        const shipX = shipRect.left + shipRect.width / 2;
+        const shipY = shipRect.top + shipRect.height / 2;
 
-    const shipAngleRad = (parseFloat(ship.style.transform.match(/-?\d+/)[0]) * Math.PI) / 180;
+        const mouseX = shipX;
+        const mouseY = shipY;
 
-    // Bereken de initiële positie van het balletje vanaf de punt van de driehoek
-    const ballX = shipX + Math.cos(shipAngleRad) * 20; // 20 is de lengte van de driehoek
-    const ballY = shipY + Math.sin(shipAngleRad) * 20; // 20 is de lengte van de driehoek
+        const angleRad = Math.atan2(mouseY - shipY, mouseX - shipX);
+        const speed = 2.5;
+        const deltaX = Math.cos(angleRad) * speed;
+        const deltaY = Math.sin(angleRad) * speed;
 
-    ball.style.left = `${ballX}px`;
-    ball.style.top = `${ballY}px`;
+        // Bereken de nieuwe positie van het schip
+        const newShipX = shipRect.left + deltaX;
+        const newShipY = shipRect.top + deltaY;
 
-    const speed = 2.5;
-    const deltaX = Math.cos(shipAngleRad) * speed;
-    const deltaY = Math.sin(shipAngleRad) * speed;
-
-    function move() {
-        const ballRect = ball.getBoundingClientRect();
-        const newX = ballRect.left + deltaX;
-        const newY = ballRect.top + deltaY;
-
-        // Controleer of het balletje de randen van het scherm raakt
-        if (newX > window.innerWidth || newX < 0 || newY > window.innerHeight || newY < 0) {
-            ball.remove();
-        } else {
-            ball.style.left = `${newX}px`;
-            ball.style.top = `${newY}px`;
-            requestAnimationFrame(move);
+        // Controleer of het schip binnen de grenzen van .block blijft
+        if (
+            newShipX >= block.offsetLeft &&
+            newShipX + shipRect.width <= block.offsetLeft + block.offsetWidth &&
+            newShipY >= block.offsetTop &&
+            newShipY + shipRect.height <= block.offsetTop + block.offsetHeight
+        ) {
+            ship.style.left = `${newShipX}px`;
+            ship.style.top = `${newShipY}px`;
         }
+
+        requestAnimationFrame(moveShip);
     }
-
-    move();
 }
-
