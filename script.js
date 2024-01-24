@@ -80,19 +80,18 @@ function createCircle() {
     const circleRect = circle.getBoundingClientRect();
 
     // Bepaal de initiële x- en y-posities binnen het .block
-    const x = Math.random() * (block.offsetWidth - circleRect.width);
-    const y = Math.random() * (block.offsetHeight - circleRect.height);
+    const x = Math.random() * (block.offsetWidth - circleRect.width) + block.offsetLeft;
+    const y = Math.random() * (block.offsetHeight - circleRect.height) + block.offsetTop;
 
     // Voeg grootteklasse toe aan cirkel
-    circle.style.left = `${block.offsetLeft + x}px`;
-    circle.style.top = `${block.offsetTop + y}px`;
+    circle.style.left = `${x}px`;
+    circle.style.top = `${y}px`;
 
     const speed = Math.random() * 2 + 1;
     const angle = Math.random() * 2 * Math.PI;
 
     moveCircle(circle, speed, angle);
 }
-
 
 // Functie om de beweging van de cirkels te regelen
 function moveCircle(circle, speed, angle) {
@@ -102,10 +101,10 @@ function moveCircle(circle, speed, angle) {
         const newY = circleRect.top + Math.sin(angle) * speed;
 
         if (
-            newX > window.innerWidth ||
-            newX + circleRect.width < 0 ||
-            newY > window.innerHeight ||
-            newY + circleRect.height < 0
+            newX > block.offsetLeft + block.offsetWidth ||
+            newX + circleRect.width < block.offsetLeft ||
+            newY > block.offsetTop + block.offsetHeight ||
+            newY + circleRect.height < block.offsetTop
         ) {
             circle.remove();
         } else {
