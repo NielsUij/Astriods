@@ -42,3 +42,26 @@ body {
     height: 5px;
     background-color: #ffffff; /* Pas deze kleur aan zoals gewenst */
 }
+
+.ball {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.large {
+    width: 60px;
+    height: 60px;
+    background-color: red; /* Pas deze kleur aan zoals gewenst */
+}
+
+.medium {
+    width: 40px;
+    height: 40px;
+    background-color: orange; /* Pas deze kleur aan zoals gewenst */
+}
+
+.small {
+    width: 20px;
+    height: 20px;
+    background-color: yellow; /* Pas deze kleur aan zoals gewenst */
+}
