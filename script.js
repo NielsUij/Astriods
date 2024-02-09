@@ -2,7 +2,13 @@ const ship = document.getElementById("ship");
 const block = document.querySelector(".block");
 let mouseX, mouseY;
 let firing = false;
-let firerate = 1; // Tijd in milliseconden tussen elke kogel
+let firerate = 1000; // Tijd in milliseconden tussen elke kogel
+let bulletSpeed = 10; // Snelheid van de kogels
+let lives = 3; // Initieel aantal levens
+
+// Levensbalk-elementen selecteren
+const lifeBar = document.getElementById("life-bar");
+const lifeElements = document.querySelectorAll(".life");
 
 document.addEventListener("mousemove", handleMouseMove);
 document.addEventListener("keydown", handleKeyDown);
@@ -49,7 +55,7 @@ function createBall(sizeClass, startX, startY) {
     const speed = 2; // constante snelheid
 
     ball.style.left = `${startX}px`;
-    ball.style.top = `${startY}px`;
+    ball.style.top = `0px`; // Start altijd vanaf de bovenrand
 
     moveBall(ball, speed);
 }
@@ -62,6 +68,7 @@ function moveBall(ball, speed) {
 
         if (newY > block.offsetTop + block.offsetHeight || newX < 0 || newX > window.innerWidth) {
             ball.remove();
+            loseLife(); // Verlies een leven als een balletje onderaan het scherm komt
         } else {
             ball.style.left = `${newX}px`;
             ball.style.top = `${newY}px`;
@@ -79,6 +86,8 @@ function splitBall(ball) {
     // Check if the ball is "small" and remove it
     if (ball.classList.contains("small")) {
         ball.remove();
+        score++; // Verhoog de score wanneer een balletje wordt geraakt
+        updateScore(); // Werk de scoreweergave bij
         return;
     }
 
@@ -91,6 +100,9 @@ function splitBall(ball) {
         createBall("small", ballRect.left, ballRect.top);
         createBall("small", ballRect.left, ballRect.top);
     }
+
+    score++; // Verhoog de score wanneer een balletje wordt geraakt
+    updateScore(); // Werk de scoreweergave bij
 
     // Remove the original ball
     ball.remove();
@@ -109,10 +121,9 @@ function fireBullet() {
 
     document.body.appendChild(bullet);
 
-    const speed = 5;
     const angleRad = Math.atan2(mouseY - shipY, mouseX - shipX);
-    const deltaX = Math.cos(angleRad) * speed;
-    const deltaY = Math.sin(angleRad) * speed;
+    const deltaX = Math.cos(angleRad) * bulletSpeed;
+    const deltaY = Math.sin(angleRad) * bulletSpeed;
 
     function moveBullet() {
         const bulletRect = bullet.getBoundingClientRect();
@@ -155,23 +166,23 @@ function autoFire() {
 }
 
 // Start met een paar grote balletjes binnen de block
-createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, block.offsetTop - 15);
-createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, block.offsetTop - 15);
-createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, block.offsetTop - 15);
+createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
+createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
+createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
 
 // Voeg elke 10 seconden een groot balletje toe
 setInterval(() => {
-    createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, block.offsetTop - 15);
+    createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
 }, 10 * 1000);
 
 // Voeg elke 5 seconden een medium balletje toe
 setInterval(() => {
-    createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, block.offsetTop - 15);
+    createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
 }, 5 * 1000);
 
 // Voeg elke 3 seconden een klein balletje toe vanaf de bovenrand
 setInterval(() => {
-    createBall("small", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, block.offsetTop - 15);
+    createBall("small", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
 }, 3 * 1000);
 
 // Voeg elke 5 seconden een klein balletje toe vanaf de linkerkant
@@ -183,3 +194,33 @@ setInterval(() => {
 setInterval(() => {
     createBall("small", window.innerWidth - 30, Math.random() * (block.offsetHeight - 30) + block.offsetTop + 15);
 }, 5 * 1000);
+
+let score = 0;
+const scoreElement = document.getElementById("score");
+
+function updateScore() {
+    scoreElement.textContent = `Score: ${score}`;
+}
+
+function loseLife() {
+    if (lives > 0) {
+        lives--;
+        lifeElements[lives].style.backgroundColor = "black"; // Verlaag het aantal levens en kleur de corresponderende levensbol zwart
+        if (lives === 0) {
+            // Als er geen levens meer zijn, stop het spel of voer andere acties uit
+            gameOver();
+        }
+    }
+}
+
+function gameOver() {
+    // Voer hier acties uit die moeten gebeuren wanneer het spel voorbij is
+    alert("Game Over!");
+}
+function gameOver() {
+    // Voer hier acties uit die moeten gebeuren wanneer het spel voorbij is
+    alert("Game Over!");
+    setTimeout(() => {
+        location.reload(); // Herstart de pagina na een vertraging van 1 seconde
+    }, 100);
+}
