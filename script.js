@@ -224,3 +224,15 @@ function gameOver() {
         location.reload(); // Herstart de pagina na een vertraging van 1 seconde
     }, 100);
 }
+
+function checkScoreForFirerate() {
+    if (score >= 10 && score < 25) {
+        firerate = 500; // Verhoog de schietsnelheid naar 500 ms
+    } else if (score >= 25 && score < 50) {
+        firerate = 200; // Verhoog de schietsnelheid naar 200 ms
+    } else if (score >= 50 && score < 100) {
+        firerate = 50; // Verhoog de schietsnelheid naar 50 ms
+    } else if (score >= 100) {
+        firerate = 1000; // Verhoog de schietsnelheid naar 1 ms
+    }
+}
