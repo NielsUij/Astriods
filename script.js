@@ -6,7 +6,8 @@ let mouseX, mouseY;
 let firing = false;
 let firerate = 500; // Tijd in milliseconden tussen elke kogel
 let bulletSpeed = 10; // Snelheid van de kogels
-let lives = 3; // Initieel aantal levens
+let lives = 5; // Initieel aantal levens
+let ballSpawnRate = 1000; // Tijd in milliseconden tussen elke spawn van een nieuw balletje
 
 // Levensbalk-elementen selecteren
 const lifeBar = document.getElementById("life-bar");
@@ -199,10 +200,19 @@ function autoFire() {
     }
 }
 
-// Start met een paar grote balletjes binnen de block
-createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
-createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
-createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
+// Functie om willekeurige gehele getallen te genereren tussen min (inclusief) en max (exclusief)
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+// Functie om een nieuw balletje toe te voegen
+function addNewBall() {
+    const startX = getRandomInt(block.offsetLeft + 15, block.offsetLeft + block.offsetWidth - 30);
+    createBall("small", startX, 0);
+}
+
+// Start met het toevoegen van balletjes en blijf dit herhalen op basis van de ballSpawnRate
+setInterval(addNewBall, ballSpawnRate);
 
 // Voeg elke 10 seconden een groot balletje toe
 setInterval(() => {
@@ -213,11 +223,6 @@ setInterval(() => {
 setInterval(() => {
     createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
 }, 5 * 1000);
-
-// Voeg elke 3 seconden een klein balletje toe vanaf de bovenrand
-setInterval(() => {
-    createBall("small", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
-}, 3 * 1000);
 
 // Voeg elke 5 seconden een klein balletje toe vanaf de linkerkant
 setInterval(() => {
@@ -231,10 +236,11 @@ setInterval(() => {
 
 function updateScore() {
     scoreElement.textContent = `Score: ${score}`;
-    if (score >= 250) {
+    if (score >= 500) {
         winGame(); // Als de score 250 bereikt, roep de winGame-functie aan
     }
     checkScoreForFirerate(); // Controleer de score om de schietsnelheid aan te passen
+    checkScoreForBulletSpeed(); // Controleer de score om de kogelsnelheid aan te passen
 }
 
 function winGame() {
@@ -272,5 +278,29 @@ function checkScoreForFirerate() {
         firerate = 50; // Verhoog de schietsnelheid naar 50 ms
     } else if (score >= 100) {
         firerate = 1; // Verhoog de schietsnelheid naar 1 ms
+    }
+}
+
+function checkScoreForBulletSpeed() {
+    if (score >= 10 && score < 25) {
+        bulletSpeed = 11; // Verhoog de kogelsnelheid naar 15
+    } else if (score >= 25 && score < 50) {
+        bulletSpeed = 12; // Verhoog de kogelsnelheid naar 20
+    } else if (score >= 50 && score < 100) {
+        bulletSpeed = 15; // Verhoog de kogelsnelheid naar 25
+    } else if (score >= 100) {
+        bulletSpeed = 17; // Verhoog de kogelsnelheid naar 30
+    }
+}
+
+function checkScoreForBallSpawnRate() {
+    if (score >= 10 && score < 25) {
+        ballSpawnRate = 800; // Verlaag de tijd tussen spawns naar 800 ms
+    } else if (score >= 25 && score < 50) {
+        ballSpawnRate = 600; // Verlaag de tijd tussen spawns naar 600 ms
+    } else if (score >= 50 && score < 100) {
+        ballSpawnRate = 400; // Verlaag de tijd tussen spawns naar 400 ms
+    } else if (score >= 100) {
+        ballSpawnRate = 200; // Verlaag de tijd tussen spawns naar 200 ms
     }
 }
