@@ -4,7 +4,7 @@ const ship3 = document.getElementById("ship3");
 const block = document.querySelector(".block");
 let mouseX, mouseY;
 let firing = false;
-let firerate = 100; // Tijd in milliseconden tussen elke kogel
+let firerate = 500; // Tijd in milliseconden tussen elke kogel
 let bulletSpeed = 10; // Snelheid van de kogels
 let lives = 3; // Initieel aantal levens
 
@@ -82,8 +82,12 @@ function createBall(sizeClass, startX, startY) {
 
     const speed = 2; // constante snelheid
 
-    ball.style.left = `${startX}px`;
-    ball.style.top = `0px`; // Start altijd vanaf de bovenrand
+    // Controleer de startpositie en pas deze aan indien nodig
+    const adjustedX = Math.max(block.offsetLeft + 15, Math.min(startX, block.offsetLeft + block.offsetWidth - 30));
+    const adjustedY = Math.max(0, Math.min(startY, block.offsetTop + block.offsetHeight - 30));
+
+    ball.style.left = `${adjustedX}px`;
+    ball.style.top = `${adjustedY}px`; // Start altijd vanaf de bovenrand
 
     moveBall(ball, speed);
 }
@@ -195,7 +199,6 @@ function autoFire() {
     }
 }
 
-
 // Start met een paar grote balletjes binnen de block
 createBall("medium", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
 createBall("large", Math.random() * (block.offsetWidth - 30) + block.offsetLeft + 15, 0);
@@ -246,7 +249,7 @@ function gameOver() {
     alert("Game Over!");
     setTimeout(() => {
         location.reload(); // Herstart de pagina na een vertraging van 1 seconde
-    }, 1000);
+    }, 10);
 }
 
 function loseLife() {
